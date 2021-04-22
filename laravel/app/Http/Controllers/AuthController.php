@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
-use App\Transformers\UserEmailObrigatorio;
-use App\Transformers\UserPasswordObrigatorio;
 use App\Transformers\UserTransformer;
 
 class AuthController extends Controller
