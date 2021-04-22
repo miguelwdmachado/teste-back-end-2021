@@ -9,6 +9,8 @@ networks:
 volumes:
   mysql:
     driver: ${VOLUMES_DRIVER}
+  phpmyadmin:
+    driver: ${VOLUMES_DRIVER}
 
 services:
 
@@ -45,7 +47,7 @@ services:
           - INSTALL_PHPREDIS=${WORKSPACE_INSTALL_PHPREDIS}
           - INSTALL_MSSQL=${WORKSPACE_INSTALL_MSSQL}
           - NVM_NODEJS_ORG_MIRROR=${WORKSPACE_NVM_NODEJS_ORG_MIRROR}
-          - INSTALL_NODE=${WORKSPACE_INSTALL_NODE}
+          - INSTALL_NODE=true
           - NPM_REGISTRY=${WORKSPACE_NPM_REGISTRY}
           - INSTALL_PNPM=${WORKSPACE_INSTALL_PNPM}
           - INSTALL_YARN=${WORKSPACE_INSTALL_YARN}
@@ -97,7 +99,7 @@ services:
           - PUID=${WORKSPACE_PUID}
           - PGID=${WORKSPACE_PGID}
           - CHROME_DRIVER_VERSION=${WORKSPACE_CHROME_DRIVER_VERSION}
-          - NODE_VERSION=${WORKSPACE_NODE_VERSION}
+          - NODE_VERSION=stable
           - YARN_VERSION=${WORKSPACE_YARN_VERSION}
           - DRUSH_VERSION=${WORKSPACE_DRUSH_VERSION}
           - AST_VERSION=${WORKSPACE_AST_VERSION}
@@ -119,7 +121,7 @@ services:
         - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
         - ./php-worker/supervisord.d:/etc/supervisord.d
       extra_hosts:
-        - "dockerhost:${DOCKER_HOST_IP}"
+        - "dockerhost:172.0.0.1"
       ports:
         - "${WORKSPACE_SSH_PORT}:22"
         - "${WORKSPACE_BROWSERSYNC_HOST_PORT}:3000"
@@ -260,4 +262,21 @@ services:
       ports:
         - "${MYSQL_PORT}:3306"
       networks:
+        - backend
+
+
+### phpMyAdmin ###########################################
+    phpmyadmin:
+      build: ./phpmyadmin
+      environment:
+        - PMA_ARBITRARY=1
+        - MYSQL_USER=${PMA_USER}
+        - MYSQL_PASSWORD=${PMA_PASSWORD}
+        - MYSQL_ROOT_PASSWORD=${PMA_ROOT_PASSWORD}
+      ports:
+        - "${PMA_PORT}:80"
+      depends_on:
+        - "${PMA_DB_ENGINE}"
+      networks:
+        - frontend
         - backend

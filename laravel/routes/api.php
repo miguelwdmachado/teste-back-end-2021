@@ -14,6 +14,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group([
+
+    'middleware' => 'api',
+    'namespace' => 'App\Http\Controllers',
+    'prefix' => 'auth'
+
+], function ($router) {
+
+    Route::post('login', 'AuthController@login');
+    Route::get('logout', 'AuthController@sair');
+    Route::post('refresh', 'AuthController@refresh');
+    Route::get('me', 'AuthController@show');
+
+    Route::post('inc_prod', 'ProductsController@store');
+    Route::post('edi_prod', 'ProductsController@update');
+    Route::delete('exc_prod', 'ProductsController@destroy');
+    Route::get('lis_prod', 'ProductsController@index');
+
 });
