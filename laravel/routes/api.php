@@ -30,6 +30,6 @@ Route::group([
     Route::post('inc_prod', 'ProductsController@store');
     Route::post('edi_prod', 'ProductsController@update');
     Route::post('exc_prod', 'ProductsController@destroy');
-    Route::get('lis_prod', 'ProductsController@index');
+    Route::post('lis_prod', 'ProductsController@index');
 
 });

@@ -25,7 +25,12 @@ class ProductsController extends Controller
   */
   public function index()
   {
-    return responder()->success(Products::paginate())->respond();
+    $produtos = Products::all();
+    if ($produtos->isEmpty()) {
+      return response()->json(array('message' => 'Nenhum produto encontrado'));
+    } else {
+      return responder()->success(Products::paginate())->respond();
+    }
   }
 
   /**
@@ -51,7 +56,7 @@ class ProductsController extends Controller
     ]);
 
     if ($validator->fails()) {
-      return responder()->error('','Um dos campos não foi informado ou é inválido')->respond();
+      return response()->json(array('message' => 'Um dos campos não foi informado ou é inválido'));
     } else {
 
       // Define o valor default para a variável que contém o nome da imagem
@@ -74,7 +79,7 @@ class ProductsController extends Controller
         $upload = $request->image->storeAs('images', $nameFile);
         // Se tiver funcionado o arquivo foi armazenado em storage/app/public/images/nomedinamicoarquivo.extensao
         if ( !$upload ) {
-          return responder()->error('','Arquivo de imagem não enviado')->respond();
+          return response()->json(array('message' => 'Arquivo de imagem não enviado'));
         } else {
           $product = Products::create([
             'nome' => $request->nome,
@@ -114,7 +119,7 @@ class ProductsController extends Controller
     ]);
 
     if ($validator->fails()) {
-      return responder()->error('','Um dos campos não foi informado ou é inválido')->respond();
+      return response()->json(array('message' => 'Um dos campos não foi informado ou é inválido'));
     } else {
       $produto = Products::where('id', $request->id)->first();
       if ($produto) {
@@ -138,7 +143,7 @@ class ProductsController extends Controller
           $upload = $request->image->storeAs('images', $nameFile);
           // Se tiver funcionado o arquivo foi armazenado em storage/app/public/categories/nomedinamicoarquivo.extensao
           if ( !$upload ) {
-            return responder()->error('','Arquivo de imagem não enviado')->respond();
+            return response()->json(array('message' => 'Arquivo de imagem não enviado'));
           } else {
 
             $old_imagem = $produto->imagem;
@@ -154,7 +159,7 @@ class ProductsController extends Controller
             }
           }
         } else {
-          return responder()->error('','Produto não encontrado')->respond();
+          return response()->json(array('message' => 'Produto não encontrado'));
         }
     }
   }
@@ -174,9 +179,9 @@ class ProductsController extends Controller
 
       Products::where('id', $request->id)->delete();
 
-      return responder()->success(Products::paginate())->respond();
+      return response()->json(array('message' => 'Produto excluído com sucesso'));
     } else {
-      return responder()->error('','Produto não encontrado')->respond();
+      return response()->json(array('message' => 'Produto não encontrado'));
     }
   }
 }
