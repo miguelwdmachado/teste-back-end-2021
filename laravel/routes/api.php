@@ -23,13 +23,8 @@ Route::group([
 ], function ($router) {
 
     Route::post('login', 'AuthController@login');
-    Route::get('logout', 'AuthController@sair');
+    Route::post('logout', 'AuthController@logout');
     Route::post('refresh', 'AuthController@refresh');
-    Route::get('me', 'AuthController@show');
-
-    Route::post('inc_prod', 'ProductsController@store');
-    Route::post('edi_prod', 'ProductsController@update');
-    Route::delete('exc_prod', 'ProductsController@destroy');
-    Route::get('lis_prod', 'ProductsController@index');
+    Route::post('me', 'AuthController@me');
 
 });

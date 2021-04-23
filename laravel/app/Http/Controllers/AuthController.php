@@ -28,14 +28,29 @@ class AuthController extends Controller
   */
   public function login(Request $request)
   {
+    $erro01 = ['message'=>'Ocorreu um erro de validação'];
+    $erro02 = [];
+    $errors = [];
     $credentials = $request->only('email', 'password');
 
-    if ($token = $this->guard()->attempt($credentials)) {
+    if ($token = auth()->attempt($credentials)) {
       return $this->respondWithToken($token);
-    } elseif (!$request->email or !$request->password) {
-      return responder()->error('500','Ocorreu um erro de validação')->respond();
+    } elseif (!$request->email && $request->password) {
+      $erro02 = array ("errors" => array(["field"=>"email", "message"=>"O campo Email é obrigatório."]));
+      $errors = array_merge($erro01,$erro02);
+      return response()->json($errors);
+    } elseif ($request->email && !$request->password) {
+      $erro02 = array ("errors" => array(["field"=>"password", "message"=>"O campo Senha é obrigatório."]));
+      $errors = array_merge($erro01,$erro02);
+      return response()->json($errors);
+    } elseif (!$request->email && !$request->password) {
+      $erro02 = array ("errors" => array(["field"=>"email", "message"=>"O campo Email é obrigatório."],
+                                        ["field"=>"password", "message"=>"O campo Senha é obrigatório."]));
+      $errors = array_merge($erro01,$erro02);
+      return response()->json($errors);
     } else {
-      return responder()->error('','Usuário ou senha inválida')->respond();
+      $erro02 = array ("error" => array("message"=>"Usuário ou senha inválida"));
+      return response()->json($erro02);
     }
 
   }
@@ -45,11 +60,9 @@ class AuthController extends Controller
   *
   * @return \Illuminate\Http\JsonResponse
   */
-  public function show()
+  public function me()
   {
-    return responder()->success(
-      ['user'=>UserTransformer::transform($this->guard()->user())]
-      )->respond();
+    return response()->json(["data" => array('user'=>UserTransformer::transform(auth()->user()))]);
   }
 
   /**
@@ -57,10 +70,10 @@ class AuthController extends Controller
   *
   * @return \Illuminate\Http\JsonResponse
   */
-  public function sair()
+  public function logout()
   {
-      $this->guard()->logout();
-      return responder()->success(['message' => 'Logout realizado com sucesso'])->respond();
+      auth()->logout();
+      return response()->json(array('message' => 'Logout realizado com sucesso'));
   }
 
   /**
@@ -71,9 +84,11 @@ class AuthController extends Controller
   public function refresh(Request $request)
   {
     if ($request->token) {
-      return $this->respondWithToken($this->guard()->refresh());
+      return $this->respondWithToken(auth()->refresh());
+      //return response()->json(["data" => array('token'=>$token)]);
     } else {
-      return responder()->error('','Token inválido')->respond();
+      $erro02 = array ("error" => array("message"=>"Token inválido"));
+      return response()->json($erro02);
     }
   }
 
@@ -86,10 +101,8 @@ class AuthController extends Controller
   */
   protected function respondWithToken($token)
   {
-    return responder()->success(
-      ['token'=>$token,
-      'user'=>UserTransformer::transform($this->guard()->user())]
-      )->respond();
+      return response()->json(["data" => array('token'=>$token,
+      'user'=>UserTransformer::transform(auth()->user()))]);
   }
 
   /**
@@ -97,8 +110,8 @@ class AuthController extends Controller
   *
   * @return \Illuminate\Contracts\Auth\Guard
   */
-  public function guard()
-  {
-    return Auth::guard();
-  }
+  // public function guard()
+  // {
+  //   return Auth::guard();
+  // }
 }

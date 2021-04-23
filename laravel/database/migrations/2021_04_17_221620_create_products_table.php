@@ -18,7 +18,7 @@ class CreateProductsTable extends Migration
             $table->string('nome');
             $table->integer('peso');
             $table->float('valor', 10, 2);
-            $table->binary('imagem');
+            $table->string('imagem', 80);
             $table->timestamps();
         });
     }

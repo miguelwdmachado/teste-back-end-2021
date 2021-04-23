@@ -67,7 +67,7 @@ return [
     |
     */
 
-    'timezone' => 'America/Sao_Paulo',
+    'timezone' => 'UTC',
 
     /*
     |--------------------------------------------------------------------------
@@ -80,7 +80,7 @@ return [
     |
     */
 
-    'locale' => 'pt_BR',
+    'locale' => 'en',
 
     /*
     |--------------------------------------------------------------------------
@@ -174,6 +174,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        Flugg\Responder\ResponderServiceProvider::class,
         Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
 
     ],
@@ -202,6 +203,7 @@ return [
         'Config' => Illuminate\Support\Facades\Config::class,
         'Cookie' => Illuminate\Support\Facades\Cookie::class,
         'Crypt' => Illuminate\Support\Facades\Crypt::class,
+        'Date' => Illuminate\Support\Facades\Date::class,
         'DB' => Illuminate\Support\Facades\DB::class,
         'Eloquent' => Illuminate\Database\Eloquent\Model::class,
         'Event' => Illuminate\Support\Facades\Event::class,
@@ -227,8 +229,8 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-        'JWTAuth' => 'TymonJWTAuthFacadesJWTAuth',
-        'JWTFactory' => 'TymonJWTAuthFacadesJWTFactory',
+        'Responder' => Flugg\Responder\Facades\Responder::class,
+        'Transformation' => Flugg\Responder\Facades\Transformation::class,
 
     ],
 
