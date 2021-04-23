@@ -60,9 +60,14 @@ class AuthController extends Controller
   *
   * @return \Illuminate\Http\JsonResponse
   */
-  public function me()
+  public function me(Request $request)
   {
-    return response()->json(["data" => array('user'=>UserTransformer::transform(auth()->user()))]);
+    if ($request->token) {
+      return response()->json(["data" => array('user'=>UserTransformer::transform(auth()->user()))]);
+    } else {
+      $erro02 = array ("error" => array("message"=>"Usuário não autenticado"));
+      return response()->json($erro02);
+    }
   }
 
   /**
