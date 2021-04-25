@@ -1,0 +1,12 @@
+{
+  "editor.tabSize": 2,
+  "phpsab.allowedAutoRulesets": [
+
+    ".phpcs.xml",
+    ".phpcs.xml.dist",
+    "phpcs.xml",
+    "phpcs.xml.dist",
+    "phpcs.ruleset.xml",
+    "ruleset.xml"
+  ]
+}

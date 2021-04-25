@@ -3,27 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Products;
-use Illuminate\Http\Request;
-use JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Transformers\UserTransformer;
+use Tymon\JWTAuth\Contracts\Providers\Auth;
+//use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ProductsController extends Controller
 {
-  // protected $user;
-  //
-  // public function __construct()
-  // {
-  //     $this->user = JWTAuth::parseToken()->authenticate();
-  // }
   /**
   * Display a listing of the resource.
   *
   * @return \Illuminate\Http\Response
   */
-  public function index()
+  public function index(Request $request)
   {
     $produtos = Products::all();
     if ($produtos->isEmpty()) {
@@ -73,10 +69,10 @@ class ProductsController extends Controller
 
         // Define finalmente o nome
         $nameFile = "{$name}.{$extension}";
-        $nfile = '/images/'.$nameFile;
+        $nfile = $nameFile;
 
         // Faz o upload:
-        $upload = $request->image->storeAs('images', $nameFile);
+        $upload = $request->image->storeAs('images', $nameFile, 'local');
         // Se tiver funcionado o arquivo foi armazenado em storage/app/public/images/nomedinamicoarquivo.extensao
         if ( !$upload ) {
           return response()->json(array('message' => 'Arquivo de imagem não enviado'));
@@ -89,7 +85,7 @@ class ProductsController extends Controller
           ]);
           $product->save();
 
-          return responder()->success([Products::paginate()])->respond();
+          return responder()->success(['message' => 'Produto incluído com sucesso', Products::paginate()])->respond();
         }
       }
     }
@@ -126,6 +122,8 @@ class ProductsController extends Controller
 
         $nameFile = null;
 
+        $old_imagem = $produto->imagem;
+
         // Verifica se informou o arquivo e se é válido
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
 
@@ -137,16 +135,14 @@ class ProductsController extends Controller
 
           // Define finalmente o nome
           $nameFile = "{$name}.{$extension}";
-          $nfile = '/images/'.$nameFile;
+          $nfile = $nameFile;
 
           // Faz o upload:
-          $upload = $request->image->storeAs('images', $nameFile);
+          $upload = $request->image->storeAs('images', $nameFile, 'local');
           // Se tiver funcionado o arquivo foi armazenado em storage/app/public/categories/nomedinamicoarquivo.extensao
           if ( !$upload ) {
             return response()->json(array('message' => 'Arquivo de imagem não enviado'));
           } else {
-
-            $old_imagem = $produto->imagem;
 
             Products::where('id', $request->id)->update(array(
               'nome' => $request->nome,
@@ -154,13 +150,13 @@ class ProductsController extends Controller
               'valor' => $request->valor,
               'imagem' => $nfile,
             ));
-            File::delete(public_path('storage'.$old_imagem));
-            return responder()->success([Products::paginate()])->respond();
-            }
+            Storage::delete('images/'.$old_imagem);
+            return responder()->success(['message' => 'Produto alterado com sucesso',Products::paginate()])->respond();
           }
-        } else {
-          return response()->json(array('message' => 'Produto não encontrado'));
         }
+      } else {
+        return response()->json(array('message' => 'Produto não encontrado'));
+      }
     }
   }
 
@@ -175,7 +171,7 @@ class ProductsController extends Controller
     $produto = Products::where('id', $request->id)->first();
     if ($produto) {
       $old_imagem = $produto->imagem;
-      File::delete(public_path('storage'.$old_imagem));
+      Storage::delete('images/'.$old_imagem);
 
       Products::where('id', $request->id)->delete();
 
@@ -184,4 +180,5 @@ class ProductsController extends Controller
       return response()->json(array('message' => 'Produto não encontrado'));
     }
   }
+
 }

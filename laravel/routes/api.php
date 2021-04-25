@@ -14,18 +14,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+/*'middleware' => 'api',
+'namespace' => 'App\Http\Controllers',
+'prefix' => 'auth'*/
+Route::post('auth/login', 'App\Http\Controllers\AuthController@login');
+
 Route::group([
+  'middleware' => ['jwt.verify'],
+  'namespace' => 'App\Http\Controllers',
+  'prefix' => 'auth'
+], function() {
 
-    'middleware' => 'api',
-    'namespace' => 'App\Http\Controllers',
-    'prefix' => 'auth'
-
-], function ($router) {
-
-    Route::post('login', 'AuthController@login');
     Route::post('logout', 'AuthController@logout');
     Route::post('refresh', 'AuthController@refresh');
-    Route::post('me', 'AuthController@me');
+    Route::get('me', 'AuthController@me');
 
     Route::post('inc_prod', 'ProductsController@store');
     Route::post('edi_prod', 'ProductsController@update');
